@@ -1,3 +1,6 @@
+from config import SHOP_MAX_ITEMS
+
+
 def moves(request, shop, store):
     """ Проверяем количество товара и количество свободного места
 
@@ -5,7 +8,7 @@ def moves(request, shop, store):
     # Получаем запрос от пользователя
     move_from = request.get_data().get('from')
     move_to = request.get_data().get('to')
-    product = request.get_data().get('product')
+    product = request.get_data().get('product').lower()
     amount = request.get_data().get('amount')
 
     # Определяем откуа и куда будем доставлять
@@ -18,6 +21,8 @@ def moves(request, shop, store):
 
     if product not in temp_from.get_items().keys():
         print("Нет такого продукта")
+    elif move_to == 'shop' and shop.get_unique_items_count() >= SHOP_MAX_ITEMS:
+        print(f"В магазине уже {shop.get_unique_items_count()} разных продуктов. Это максимальное кол-во")
     else:
         if temp_to.get_free_space() >= amount:
             if temp_from.remove(product, amount):
